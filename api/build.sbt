@@ -6,7 +6,6 @@ lazy val doobieVersion = "0.6.0"
 name := "pwd-breaker-api"
 libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-http"            % akkaHttpVersion,
-  "com.typesafe.akka" %% "akka-http-xml"        % akkaHttpVersion,
   "com.typesafe.akka" %% "akka-stream"          % akkaVersion,
 
   "de.heikoseeberger" %% "akka-http-circe" % "1.23.0",
