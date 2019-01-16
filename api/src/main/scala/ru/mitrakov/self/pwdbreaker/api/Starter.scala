@@ -6,22 +6,27 @@ import scala.util.{ Failure, Success }
 
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
-import akka.http.scaladsl.model.StatusCodes._
-import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 import akka.stream.ActorMaterializer
 import akka.stream.scaladsl.Sink
 import akka.util.ByteString
 import de.heikoseeberger.akkahttpcirce.FailFastCirceSupport
-import io.circe.generic.auto._
+
+import ru.mitrakov.self.pwdbreaker.api.amqp.AmqpPublisher
 import ru.mitrakov.self.pwdbreaker.api.db.{ RequestDao, UserDao }
-import ru.mitrakov.self.pwdbreaker.api.models.User
+import ru.mitrakov.self.pwdbreaker.api.models.{ Task, User }
 import ru.mitrakov.self.pwdbreaker.api.security.SimplePassAuthenticator
 
 object Starter extends App with FailFastCirceSupport {
+  import akka.http.scaladsl.server.Directives._
+  import io.circe.generic.auto._
+  import io.circe.syntax._
+
   implicit val actorSystem: ActorSystem = ActorSystem("breaker")
   implicit val materializer: ActorMaterializer = ActorMaterializer()
   implicit val ec: ExecutionContext = actorSystem.dispatcher
+
+  val amqp = new AmqpPublisher()
 
   val routes: Route = pathSingleSlash {
     get {
@@ -37,7 +42,7 @@ object Starter extends App with FailFastCirceSupport {
     }
   } ~ pathPrefix("user" / LongNumber) { userId =>
     path("current") {
-      (get & authenticateBasic("realm", SimplePassAuthenticator))  { user =>
+      (get & authenticateBasic("realm", SimplePassAuthenticator)) { user =>
         complete("???")
       }
     } ~ path("start") {
@@ -47,9 +52,12 @@ object Starter extends App with FailFastCirceSupport {
             val sink = Sink.reduce[ByteString]((a, b) => a ++ b)
             val writeResult = fileStream.runWith(sink)
             onSuccess(writeResult) { content =>
-              if (RequestDao.persist(user, fileInfo.fileName, content) == 1) {
-                complete(s"Successfully written ${content.length} bytes")
-              } else complete((InternalServerError, s"Error occurred"))
+              val newId = RequestDao.persist(user, fileInfo.fileName, content)
+              val task = Task(newId)
+              val sendResult = amqp.send(ByteString(task.asJson.toString))
+              onSuccess(sendResult) { status =>
+                complete(s"Successfully written ${content.length} bytes (AMQP status: $status)")
+              }
             }
         }
       }
