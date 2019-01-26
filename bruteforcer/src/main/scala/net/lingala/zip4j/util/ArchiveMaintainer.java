@@ -21,7 +21,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.RandomAccessFile;
+import /*by mitrakov: java.io*/ net.lingala.zip4j.io.RandomAccessFile;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -309,7 +309,8 @@ public class ArchiveMaintainer {
 		}
 		
 		try {
-			return new RandomAccessFile(new File(zipModel.getZipFile()), mode);
+			// by mitrakov: return new RandomAccessFile(new File(zipModel.getZipFile()), mode);
+			return new RandomAccessFile(zipModel.bytearray);
 		} catch (FileNotFoundException e) {
 			throw new ZipException(e);
 		}
@@ -474,7 +475,8 @@ public class ArchiveMaintainer {
 				throw new ZipException("split file does not exist: " + partFile);
 			}
 			
-			return new RandomAccessFile(tmpFile, InternalZipConstants.READ_MODE);
+			// by mitrakov: return new RandomAccessFile(tmpFile, InternalZipConstants.READ_MODE);
+			return new RandomAccessFile(zipModel.bytearray);
 		} catch (FileNotFoundException e) {
 			throw new ZipException(e);
 		} catch (Exception e) {

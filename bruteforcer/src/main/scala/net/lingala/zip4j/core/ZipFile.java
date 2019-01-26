@@ -20,7 +20,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.RandomAccessFile;
+import /*by mitrakov: java.io*/ net.lingala.zip4j.io.RandomAccessFile;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
@@ -403,7 +403,7 @@ public class ZipFile {
 	 */
 	private void readZipInfo() throws ZipException {
 		
-		if (!Zip4jUtil.checkFileExists(file)) {
+		/* by mitrakov: if (!Zip4jUtil.checkFileExists(file)) {
 			throw new ZipException("zip file does not exist");
 		}
 		
@@ -413,16 +413,18 @@ public class ZipFile {
 		
 		if (this.mode != InternalZipConstants.MODE_UNZIP) {
 			throw new ZipException("Invalid mode");
-		}
+		}*/
 		
 		RandomAccessFile raf = null;
 		try {
-			raf = new RandomAccessFile(new File(file), InternalZipConstants.READ_MODE);
-			
+			// by mitrakov: raf = new RandomAccessFile(new File(file), InternalZipConstants.READ_MODE);
+			raf = new RandomAccessFile(bytearray);
+
 			if (zipModel == null) {
 				
 				HeaderReader headerReader = new HeaderReader(raf);
-				zipModel = headerReader.readAllHeaders(this.fileNameCharset);
+				// by mitrakov: zipModel = headerReader.readAllHeaders(this.fileNameCharset);
+				zipModel = headerReader.readAllHeaders(this.fileNameCharset, bytearray);
 				if (zipModel != null) {
 					zipModel.setZipFile(file);
 				}
@@ -1038,4 +1040,10 @@ public class ZipFile {
 	public File getFile() {
 		return new File(this.file);
 	}
+
+	// mitrakov
+	private byte[] bytearray;
+	public ZipFile(byte[] bytearray) throws ZipException { this.bytearray = bytearray; }
+	public ZipModel getZipModel() { return zipModel; }
+	// end of mitrakov
 }

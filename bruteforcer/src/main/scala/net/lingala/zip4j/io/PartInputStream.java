@@ -17,7 +17,7 @@
 package net.lingala.zip4j.io;
 
 import java.io.IOException;
-import java.io.RandomAccessFile;
+// mitrakov: import java.io.RandomAccessFile;
 
 import net.lingala.zip4j.crypto.AESDecrypter;
 import net.lingala.zip4j.crypto.IDecrypter;

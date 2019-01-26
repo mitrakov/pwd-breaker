@@ -22,7 +22,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.RandomAccessFile;
+import /*by mitrakov: java.io*/ net.lingala.zip4j.io.RandomAccessFile;
 import java.util.Arrays;
 import java.util.zip.CRC32;
 
@@ -326,7 +326,8 @@ public class UnzipEngine {
 			rafForLH = checkSplitFile();
 			
 			if (rafForLH == null) {
-				rafForLH = new RandomAccessFile(new File(this.zipModel.getZipFile()), InternalZipConstants.READ_MODE);
+				// by mitrakov: rafForLH = new RandomAccessFile(new File(this.zipModel.getZipFile()), InternalZipConstants.READ_MODE);
+				rafForLH = new RandomAccessFile(zipModel.bytearray);
 			}
 			
 			HeaderReader headerReader = new HeaderReader(rafForLH);
@@ -374,8 +375,9 @@ public class UnzipEngine {
 			}
 			
 			try {
-				RandomAccessFile raf = new RandomAccessFile(partFile, InternalZipConstants.READ_MODE);
-				
+				// by mitrakov :RandomAccessFile raf = new RandomAccessFile(partFile, InternalZipConstants.READ_MODE);
+				RandomAccessFile raf = new RandomAccessFile(zipModel.bytearray);
+
 				if (currSplitFileCounter == 1) {
 					byte[] splitSig = new byte[4];
 					raf.read(splitSig);
@@ -394,16 +396,17 @@ public class UnzipEngine {
 	}
 	
 	private RandomAccessFile createFileHandler(String mode) throws ZipException {
-		if (this.zipModel == null || !Zip4jUtil.isStringNotNullAndNotEmpty(this.zipModel.getZipFile())) {
+		/* by mitrakov: if (this.zipModel == null || !Zip4jUtil.isStringNotNullAndNotEmpty(this.zipModel.getZipFile())) {
 			throw new ZipException("input parameter is null in getFilePointer");
-		}
+		}*/
 		
 		try {
 			RandomAccessFile raf = null;
 			if (zipModel.isSplitArchive()) {
 				raf = checkSplitFile();
 			} else {
-				raf = new RandomAccessFile(new File(this.zipModel.getZipFile()), mode);
+				// by mitrakov: raf = new RandomAccessFile(new File(this.zipModel.getZipFile()), mode);
+				raf = new RandomAccessFile(zipModel.bytearray);
 			}
 			return raf;
 		} catch (FileNotFoundException e) {
@@ -466,7 +469,8 @@ public class UnzipEngine {
 		} catch (ZipException e) {
 			throw new IOException(e.getMessage());
 		}
-		return new RandomAccessFile(partFile, InternalZipConstants.READ_MODE);
+		// by mitrakov: return new RandomAccessFile(partFile, InternalZipConstants.READ_MODE);
+		return new RandomAccessFile(zipModel.bytearray);
 	}
 	
 	private void closeStreams(InputStream is, OutputStream os) throws ZipException {

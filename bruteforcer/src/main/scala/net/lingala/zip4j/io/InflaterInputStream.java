@@ -18,7 +18,7 @@ package net.lingala.zip4j.io;
 
 import java.io.EOFException;
 import java.io.IOException;
-import java.io.RandomAccessFile;
+// mitrakov: import java.io.RandomAccessFile;
 import java.util.zip.DataFormatException;
 import java.util.zip.Inflater;
 

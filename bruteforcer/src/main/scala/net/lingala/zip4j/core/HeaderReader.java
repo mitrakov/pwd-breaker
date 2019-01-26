@@ -17,7 +17,7 @@
 package net.lingala.zip4j.core;
 
 import java.io.IOException;
-import java.io.RandomAccessFile;
+import /*by mitrakov: java.io*/ net.lingala.zip4j.io.RandomAccessFile;
 import java.util.ArrayList;
 
 import net.lingala.zip4j.exception.ZipException;
@@ -62,7 +62,7 @@ public class HeaderReader {
 	 * @throws ZipException
 	 */
 	public ZipModel readAllHeaders() throws ZipException {
-		return readAllHeaders(null);
+		return readAllHeaders(null, null);
 	}
 	
 	/**
@@ -72,8 +72,10 @@ public class HeaderReader {
 	 * @return {@link ZipModel}
 	 * @throws ZipException
 	 */
-	public ZipModel readAllHeaders(String fileNameCharset) throws ZipException {
-		zipModel = new ZipModel();
+	/* by mitrakov: public ZipModel readAllHeaders(String fileNameCharset) throws ZipException {
+	    zipModel = new ZipModel();*/
+	public ZipModel readAllHeaders(String fileNameCharset, byte[] bytearray) throws ZipException {
+		zipModel = new ZipModel(bytearray);
 		zipModel.setFileNameCharset(fileNameCharset);
 		zipModel.setEndCentralDirRecord(readEndOfCentralDirectoryRecord());
 		

@@ -180,5 +180,12 @@ public class ZipModel implements Cloneable {
 	public void setFileNameCharset(String fileNameCharset) {
 		this.fileNameCharset = fileNameCharset;
 	}
-	
+
+	// mitrakov
+	public byte[] bytearray;
+	public ZipModel(byte[] bytearray) {
+		splitLength = -1;
+		this.bytearray = bytearray;
+	}
+	// end of mitrakov
 }

@@ -16,7 +16,7 @@
 
 package net.lingala.zip4j.util;
 
-import java.io.DataInput;
+import /*by mitrakov: java.io.DataInput*/ net.lingala.zip4j.io.RandomAccessFile;
 import java.io.IOException;
 
 import net.lingala.zip4j.exception.ZipException;
@@ -43,7 +43,7 @@ public class Raw
 		return temp;
 	}
 	
-	public static int readLeInt(DataInput di, byte[] b) throws ZipException{
+	public static int readLeInt(/*by mitrakov: DataInput*/ RandomAccessFile di, byte[] b) throws ZipException{
 		try {
 			di.readFully(b, 0, 4);
 		} catch (IOException e) {
